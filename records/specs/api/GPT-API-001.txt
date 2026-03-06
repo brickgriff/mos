@@ -1,0 +1,103 @@
+# GPT-API-001 Snapshot (v1.2)
+Version: 1.2
+Identifier: GPT-API-001
+
+------------------------------------------------------------
+IDENTIFIERS
+------------------------------------------------------------
+- identifier = profile_id OR spec_id
+- profile_id = account@platform (single argument) OR platform account (two arguments)
+- spec_id = IDs for projects, documents, or systems
+
+------------------------------------------------------------
+ACTIVE COMMANDS
+------------------------------------------------------------
+
+/list
+- Alias for /list all
+- Shows both profile_ids and spec_ids
+
+/list all
+- Show all tracked profiles and specs
+
+/list profiles
+- Show only tracked profile_ids (platform accounts)
+
+/list specs
+- Show only tracked spec_ids (projects, documents, systems)
+
+/list steps
+- Alias for /steps (supports optional [identifier])
+
+/steps
+- Prints **top three meta-project steps** (no identifier)
+
+/steps [identifier]
+- Prints **top three next steps** for the profile or spec  
+- Also appends **top three meta-project steps**
+
+/profile [profile_id]
+- Prints profile details (platform, display name, type, associations)  
+- Includes **top three next steps** for that profile only
+
+/spec
+- Print the full current API spec
+
+/spec [spec_id]
+- Print the current spec for the indicated spec_id  
+- Optional: follow with bulleted list to propose updates without bumping version
+
+/map
+- Generate a dependency/ecosystem map of profiles and specs
+- Can filter by profile_id or spec_id
+
+/map "[map_data]"
+- Overwrites the current ecosystem map with provided data
+- Accepts paragraph text, bulleted lists, or ASCII art
+- Must wrap map_data in quotes
+- Fallback to automated visualization if input cannot be parsed
+
+/remove [identifier]
+- Removes the tracked profile_id or spec_id
+- Deletes the record and all associated next steps
+- Accepted identifier formats: account@platform, platform account, or spec_id
+- References to removed identifiers in `/map`, `/steps`, or `/export` are ignored until updated
+
+/version
+- Check the current version of GPT-API-001
+
+/version [number]
+- Request an update to the API version
+
+/version up / down
+- Incrementally adjust API version
+
+/version [identifier] [number]
+- Set a specific spec version to [number] (profile_ids cannot be versioned)
+
+/version [identifier] up|down
+- Incrementally adjust a specific spec version
+
+/help
+- Alias of /commands
+
+/commands
+- Return current command registry
+
+/share
+- Prints a self-contained snapshot of the current API spec  
+- Copy-paste into a new conversation to immediately apply the spec  
+- Includes Quick Start Notes for non-coders
+
+/export
+- Prints **all meta-project steps** in full
+
+/export [profile_id or spec_id]
+- Prints **deep record** of the indicated profile or spec  
+- Includes profile/spec metadata, associations, and **all next steps**  
+- Output is copyable and compatible with `/import`  
+
+/import "[exported_data]"
+- Accepts a previously exported deep record and updates the system record for the corresponding identifier  
+- Overwrites current metadata, steps, and associations  
+- Must wrap exported_data in quotes for safe parsing
