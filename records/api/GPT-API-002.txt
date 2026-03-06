@@ -1,0 +1,368 @@
+{
+  "version": "0.9",
+  "identifier": "GPT-API-002",
+  "latest_proposal_id": "GPT-CHA-008",
+  "latest_proposal_status": "merged",
+  "metadata": {
+    "created": "2026-03-06T00:00:00Z",
+    "last_applied_version": "0.9",
+    "governance": {
+      "proposal_ordering": "Unique, sequential alphanumeric IDs; array is canonical truth; latest_proposal_status always matches the last proposal in proposals array.",
+      "lifecycle": "draft -> merged -> accepted|rejected -> archived",
+      "archiving": "Proposals array is cleared in memory after application to the spec; version control and documentation management are manual unless otherwise configured."
+    }
+  },
+  "definitions": {
+    "execution_model": {
+      "description": "Commands operate as a stateless interface that reads and mutates tracked records; multiple commands can optionally be separated by semicolons or newlines",
+      "format": "command1 ; command2 ; ... (or separate commands by newline). Semicolons do not allow multiline commands; newlines can separate multiple-line commands."
+    },
+    "command": {
+      "description": "Execute command with given details",
+      "format": "/command_name [identifier] [command_argument]..."
+    },
+    "command_name": {
+      "description": "Required label indicating command to execute",
+      "format": "command (defined in command_registry)"
+    },
+    "command_argument": {
+      "description": "Optional parameter modifying command behavior",
+      "format": "key=value"
+    },
+    "identifier": {
+      "description": "Unique name for a record or record type; format depends on command",
+      "format": "[profile_id] OR [spec_id] OR [record_type]"
+    },
+    "profile_id": {
+      "description": "Identifier for profile records",
+      "format": "account@platform OR platform account"
+    },
+    "spec_id": {
+      "description": "Identifier for spec records; projects, documents, or systems",
+      "format": "[spec_name_code]-[spec_type_code]-[spec_edition_num]"
+    },
+    "spec_name_code": {
+      "description": "Abbreviated code for spec name",
+      "format": "ABC (intuitive 3-letter nickname)"
+    },
+    "spec_type_code": {
+      "description": "Standard code for spec type",
+      "format": "TYP (3-letter code defined in spec_type_registry)"
+    },
+    "spec_edition_num": {
+      "description": "Spec edition number",
+      "format": "### (differs from version number)"
+    },
+    "record_type": {
+      "description": "Record keyword used by commands; singular used as spec type parameter",
+      "format": "types (defined in record_type_registry)"
+    }
+  },
+  "record_type_registry": {
+    "specs": "Projects, documents, or systems",
+    "profiles": "Platform accounts",
+    "tasks": "Actionable work items associated with records",
+    "proposals": "Change proposals or design discussions",
+    "api": "Special spec type; both a record type and tracked meta-spec",
+    "all": "All record types"
+  },
+  "spec_type_registry": {
+    "API": "Application programming interface specification",
+    "SYS": "System architecture specification",
+    "DOC": "Documentation specification",
+    "MAP": "Dependency or ecosystem mapping specification",
+    "PRO": "Profile schema specification (replaces deprecated PRF)",
+    "CHA": "Specification change proposal (replaces deprecated PRP)"
+  },
+  "command_registry": {
+    "/list": {
+      "description": "Alias for /list all; Shows both `profile_ids` and `spec_ids`. Always includes GPT-API-002 as a tracked meta-project spec."
+    },
+    "/list all": {
+      "description": "Show all tracked profiles and specs. Always includes GPT-API-002."
+    },
+    "/list profiles": {
+      "description": "Show only tracked `profile_ids`"
+    },
+    "/list specs": {
+      "description": "Show only tracked `spec_ids`. Always includes GPT-API-002."
+    },
+    "/list tasks": {
+      "description": "Alias for `/tasks`",
+      "aliases": ["/list steps"]
+    },
+    "/tasks": {
+      "description": "Prints top three meta-project tasks",
+      "aliases": ["/steps"]
+    },
+    "/tasks [identifier]": {
+      "description": "Prints top three next tasks for the record and appends meta-project tasks",
+      "aliases": ["/steps [identifier]"]
+    },
+    "/profile [profile_id]": {
+      "description": "Show profile details; creates record if new"
+    },
+    "/spec": {
+      "description": "Show the default API spec in pretty markdown. References the tracked meta-project record GPT-API-002."
+    },
+    "/spec [spec_id]": {
+      "description": "Show spec for the given identifier. GPT-API-002 always exists as a tracked meta-project."
+    },
+    "/map": {
+      "description": "Generate ecosystem map"
+    },
+    "/map [map_data]": {
+      "description": "Overwrite ecosystem map using provided data"
+    },
+    "/set [identifier] [command_argument]...": {
+      "description": "Update record metadata using key=value arguments"
+    },
+    "/remove [identifier]": {
+      "description": "Remove tracked record and associated tasks"
+    },
+    "/version": {
+      "description": "Return structured JSON output including version, latest_proposal_id, latest_proposal_status"
+    },
+    "/version [number]": {
+      "description": "Request an API version update"
+    },
+    "/version up|down": {
+      "description": "Incrementally adjust API version"
+    },
+    "/version [identifier] [number]": {
+      "description": "Set version for a specific spec"
+    },
+    "/version [identifier] up|down": {
+      "description": "Incrementally adjust spec version"
+    },
+    "/help": {
+      "description": "Show commands plus Quick Start Notes",
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; `command_sort_order` applies."
+    },
+    "/commands": {
+      "description": "List commands in sort order",
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; `command_sort_order` applies."
+    },
+    "/share": {
+      "description": "Show API spec plus Quick Start Notes",
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; `command_sort_order` applies."
+    },
+    "/export [identifier]": {
+      "description": "Export full system or specific record, including all associated tasks",
+      "note": "Meta-project tasks appear only when exporting the API spec (`GPT-API-002`). Profile and spec exports include only tasks associated with that record."
+    },
+    "/export api": {
+      "description": "Export default API spec"
+    },
+    "/import [exported_data]": {
+      "description": "Import exported or modified deep record"
+    },
+    "/iterate": {
+      "description": "Create or update a draft proposal from a bullet list or unstructured change ideas.",
+      "format": "/iterate [identifier] [proposal_blob]",
+      "input": {
+        "identifier": "Optional; restricts proposal context to the specified record; if omitted, system infers context.",
+        "proposal_blob": "Optional; long freeform string in quotes; if omitted, system looks for a hyphen-prefixed bulleted list following the command."
+      },
+      "output": {
+        "type": "change_proposal",
+        "fields": ["identifier", "type", "owner", "author", "target_spec", "target_version", "created_or_updated", "dependencies", "proposal.summary", "proposal.changes", "status"],
+        "warnings": "Returns warning if identifier refers to archived or mature proposal (accepted/rejected)."
+      }
+    }
+  },
+  "command_sort_order": [
+    "help and commands",
+    "version",
+    "list",
+    "spec",
+    "profile",
+    "tasks",
+    "map",
+    "export",
+    "import",
+    "share"
+  ],
+  "api_schema": [
+    "version",
+    "identifier",
+    "latest_proposal_id",
+    "latest_proposal_status",
+    "definitions",
+    "record_type_registry",
+    "spec_type_registry",
+    "command_registry",
+    "command_sort_order",
+    "change_proposal_format",
+    "metadata",
+    "proposals"
+  ],
+  "change_proposal_format": {
+    "identifier": "Unique identifier for the change proposal (example: GPT-CHA-005)",
+    "type": "Record type code; always `CHA` for change proposals",
+    "owner": "Author or responsible party for the proposal",
+    "author": "Author (matches owner)",
+    "target_spec": "Identifier of the spec the proposal applies to",
+    "target_version": "Version of the spec the proposal addresses",
+    "created_or_updated": "Timestamp of creation or last update; ISO 8601 timestamp",
+    "dependencies": "Array of identifiers (always present, even if empty)",
+    "proposal.summary": "Short summary describing the intent of the change",
+    "proposal.changes": "Array of change objects with `target` and `change` fields",
+    "proposal.notes": "Optional field for human-readable comments",
+    "status": "Lifecycle state: draft, merged, accepted, rejected, archived"
+  },
+  "proposals": [
+    {
+      "identifier": "GPT-CHA-007",
+      "type": "CHA",
+      "owner": "assistant",
+      "author": "assistant",
+      "created_or_updated": "2026-03-06T00:00:00Z",
+      "target_spec": "GPT-API-002",
+      "target_version": "0.9",
+      "dependencies": [],
+      "proposal": {
+        "summary": "Enhance proposal governance, add proposal tracking fields, improve /version output, rename spec_fork_num to spec_edition_num, introduce metadata container, and define /iterate context rules.",
+        "changes": [
+          {
+            "target": "top_level_fields",
+            "change": "Add `latest_proposal_status` field and `proposals` array initialized empty for new standalone versions; add `metadata` object with governance rules."
+          },
+          {
+            "target": "/version command",
+            "change": "Return structured JSON including `version`, `latest_proposal_id`, `latest_proposal_status`."
+          },
+          {
+            "target": "definitions.spec_fork_num",
+            "change": "Rename to `spec_edition_num` and update all references."
+          },
+          {
+            "target": "change_proposal_format",
+            "change": "Add `created_or_updated`, `dependencies` array, `author` field; fields mirror API spec schema."
+          },
+          {
+            "target": "proposal_governance",
+            "change": "Proposals must be unique, sorted alphanumerically; IDs sequentially consumed even if rejected; `latest_proposal_status` matches the latest proposal in the array; rules stored in `metadata.governance`."
+          },
+          {
+            "target": "proposal_lifecycle",
+            "change": "Formal lifecycle: draft -> merged -> accepted|rejected -> archived."
+          },
+          {
+            "target": "command_registry",
+            "change": "Introduce `/iterate` command to convert bulleted lists or unstructured change ideas into draft proposals; nested indentation defines context identifier for subsequent change items."
+          },
+          {
+            "target": "api_schema",
+            "change": "Explicitly list top-level fields in API schema for machine readability: `version`, `identifier`, `latest_proposal_id`, `latest_proposal_status`, `definitions`, `record_type_registry`, `spec_type_registry`, `command_registry`, `command_sort_order`, `change_proposal_format`, `metadata`, `proposals`."
+          }
+        ]
+      },
+      "status": "merged"
+    },
+    {
+      "identifier": "GPT-CHA-008",
+      "type": "CHA",
+      "owner": "assistant",
+      "author": "assistant",
+      "created_or_updated": "2026-03-06T00:00:00Z",
+      "target_spec": "GPT-API-002",
+      "target_version": "0.9",
+      "dependencies": ["GPT-CHA-007"],
+      "proposal": {
+        "summary": "Resolve governance ambiguities, clarify execution_model, enforce consistent archiving, fix JSON syntax error, add missing definitions, and improve machine-readable consistency.",
+        "changes": [
+          {
+            "target": "metadata.governance",
+            "change": "Fix lifecycle syntax; clarify archiving behavior as memory-only; version control manual."
+          },
+          {
+            "target": "definitions.execution_model",
+            "change": "Clarify newline vs semicolon command separation rules; semicolons cannot have multiline commands; newlines can."
+          },
+          {
+            "target": "command_registry./iterate",
+            "change": "Define input/output JSON, context handling, warnings for mature proposals."
+          },
+          {
+            "target": "command_registry aliases",
+            "change": "Standardize all aliases; remove duplicates."
+          },
+          {
+            "target": "api_schema",
+            "change": "Add `metadata.governance.archiving`; add `metadata.created` and `metadata.last_applied_version` to api_schema."
+          },
+          {
+            "target": "record_type_registry",
+            "change": "Clarify difference between `specs` and `api`; define `api` as both special spec and record type."
+          },
+          {
+            "target": "change_proposal_format",
+            "change": "Dependencies array always present; ISO 8601 timestamp; optional `proposal.notes`."
+          },
+          {
+            "target": "command_sort_order",
+            "change": "Clarify 'help and commands' ordering and deterministic behavior."
+          },
+          {
+            "target": "top-level",
+            "change": "Add JSON validation rules: non-empty strings, no null arrays, identifier regex `[A-Z]{3}-[A-Z]{3}-\\d{3}`."
+          }
+        ]
+      },
+      "status": "merged"
+    },
+    {
+      "identifier": "GPT-CHA-009",
+      "type": "CHA",
+      "owner": "assistant",
+      "author": "assistant",
+      "created_or_updated": "2026-03-06T00:00:00Z",
+      "target_spec": "GPT-API-002",
+      "target_version": "0.9",
+      "dependencies": ["GPT-CHA-008"],
+      "proposal": {
+        "summary": "Clarify `/iterate` behavior, execution model flexibility, dependency hints, archiving strategy, versioning semantics, and task handling; add warnings for context window limits.",
+        "changes": [
+          {
+            "target": "command_registry./iterate",
+            "change": "If no identifier is provided and record context is ambiguous, default to GPT-API-002; never create new records automatically; always warn user if changes cannot be applied or conflict with best practice."
+          },
+          {
+            "target": "definitions.execution_model",
+            "change": "Allow semicolon/newline command mixing unless it conflicts with best practice; semicolons terminate commands for chaining contexts; quotes are convenience only; system does not enforce pre-emptive syntax restrictions."
+          },
+          {
+            "target": "change_proposal_format.dependencies",
+            "change": "Clarify that `dependencies` are convenient hints for maintainers; system does not enforce dependency resolution."
+          },
+          {
+            "target": "metadata.governance.archiving",
+            "change": "Specify that archiving is manual (e.g., GitHub); system focuses on formalizing change proposals; internal memory cannot be relied on."
+          },
+          {
+            "target": "versioning",
+            "change": "Edition numbers are for spec flavors; version numbers are milestones reflecting sets of merged proposals; no current meaning for major/minor parts; increment 0.1 per milestone."
+          },
+          {
+            "target": "record_type_registry",
+            "change": "Remove `tasks` as a record type; system infers tasks per record, user can add suggestions via identifier; remove all `/list tasks` references."
+          },
+          {
+            "target": "system warnings",
+            "change": "Add automatic warning if full spec including proposals exceeds estimated context window; suggest generating a minimal standalone spec and continuing in a new conversation."
+          },
+          {
+            "target": "timestamps",
+            "change": "Default to UTC for all ISO 8601 timestamps."
+          },
+          {
+            "target": "command output conventions",
+            "change": "Commands and tasks should be human-readable; rigorous commands like `/iterate`, `/version`, `/export` output structured JSON."
+          }
+        ]
+      },
+      "status": "draft"
+    }
+  ]
+}
