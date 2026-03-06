@@ -1,6 +1,7 @@
 {
-  "version": "0.5",
+  "version": "0.6",
   "identifier": "GPT-API-002",
+  "latest_proposal_id": "GPT-CHA-003",
   "definitions": {
     "execution_model": {
       "description": "Commands operate as a stateless interface that reads and mutates tracked records; multiple commands can optionally be separated by semicolons or newlines",
@@ -38,8 +39,8 @@
       "description": "Standard code for spec type",
       "format": "TYP (3-letter code defined in spec_type_registry)"
     },
-    "spec_fork_num": {
-      "description": "Spec edition number",
+    "spec_ref_num": {
+      "description": "Spec reference number",
       "format": "### (differs from version number)"
     },
     "record_type": {
@@ -64,35 +65,122 @@
     "CHA": "Specification change proposal (replaces deprecated PRP)"
   },
   "command_registry": {
-    "/list": {"description": "Alias for /list all; Shows both profile_ids and spec_ids"},
-    "/list all": {"description": "Show all tracked profiles and specs"},
-    "/list profiles": {"description": "Show only tracked profile_ids"},
-    "/list specs": {"description": "Show only tracked spec_ids"},
-    "/list tasks": {"description": "Alias for /tasks (optional alias: /list steps)","aliases":["/list steps"]},
-    "/tasks": {"description": "Prints top three meta-project tasks (alias: /steps)","aliases":["/steps"]},
-    "/tasks [identifier]": {"description": "Prints top three next tasks for the record and appends meta-project tasks (alias: /steps [identifier])","aliases":["/steps [identifier]"]},
-    "/profile [profile_id]": {"description": "Print profile details; creates record if new"},
-    "/spec": {"description": "Show the default API spec as markdown"},
-    "/spec [spec_id]": {"description": "Show spec for the given identifier"},
-    "/map": {"description": "Generate ecosystem map"},
-    "/map [map_data]": {"description": "Overwrite ecosystem map using provided data"},
-    "/set [identifier] [command_argument]...": {"description": "Update record metadata using key=value arguments"},
-    "/remove [identifier]": {"description": "Remove tracked record and associated tasks"},
-    "/version": {"description": "Check the current version of GPT-API-002"},
-    "/version [number]": {"description": "Request an API version update"},
-    "/version up|down": {"description": "Incrementally adjust API version"},
-    "/version [identifier] [number]": {"description": "Set version for a specific spec"},
-    "/version [identifier] up|down": {"description": "Incrementally adjust spec version"},
-    "/help": {"description": "Show commands plus Quick Start Notes"},
-    "/commands": {"description": "List commands in sort order"},
-    "/share": {"description": "Show API spec plus Quick Start Notes"},
-    "/export [identifier]": {"description": "Export full system or specific record, including all associated tasks"},
-    "/export api": {"description": "Export default API spec"},
-    "/import [exported_data]": {"description": "Import exported or modified deep record"}
+    "/list": {
+      "description": "Alias for /list all; Shows both profile_ids and spec_ids"
+    },
+    "/list all": {
+      "description": "Show all tracked profiles and specs"
+    },
+    "/list profiles": {
+      "description": "Show only tracked profile_ids"
+    },
+    "/list specs": {
+      "description": "Show only tracked spec_ids"
+    },
+    "/list tasks": {
+      "description": "Alias for /tasks (optional alias: /list steps)",
+      "aliases": ["/list steps"],
+      "note": "Quick Start Notes ordering enforced only in /help, /share, and similar tutorial commands."
+    },
+    "/tasks": {
+      "description": "Prints top three meta-project tasks (alias: /steps)",
+      "aliases": ["/steps"],
+      "note": "Quick Start Notes ordering enforced only in /help, /share, and similar tutorial commands."
+    },
+    "/tasks [identifier]": {
+      "description": "Prints top three next tasks for the record and appends meta-project tasks (alias: /steps [identifier])",
+      "aliases": ["/steps [identifier]"],
+      "note": "Quick Start Notes ordering enforced only in /help, /share, and similar tutorial commands."
+    },
+    "/profile [profile_id]": {
+      "description": "Show profile details; creates record if new"
+    },
+    "/spec": {
+      "description": "Show the default API spec in pretty markdown",
+      "note": "Pipes in tables and inline identifiers are escaped. Quick Start Notes not included; uses natural command order."
+    },
+    "/spec [spec_id]": {
+      "description": "Show spec for the given identifier"
+    },
+    "/map": {
+      "description": "Generate ecosystem map"
+    },
+    "/map [map_data]": {
+      "description": "Overwrite ecosystem map using provided data"
+    },
+    "/set [identifier] [command_argument]...": {
+      "description": "Update record metadata using key=value arguments"
+    },
+    "/remove [identifier]": {
+      "description": "Remove tracked record and associated tasks"
+    },
+    "/version": {
+      "description": "Check the current version of GPT-API-002"
+    },
+    "/version [number]": {
+      "description": "Request an API version update"
+    },
+    "/version up|down": {
+      "description": "Incrementally adjust API version"
+    },
+    "/version [identifier] [number]": {
+      "description": "Set version for a specific spec"
+    },
+    "/version [identifier] up|down": {
+      "description": "Incrementally adjust spec version"
+    },
+    "/help": {
+      "description": "Show commands plus Quick Start Notes",
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; command_sort_order applies."
+    },
+    "/commands": {
+      "description": "List commands in sort order",
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; command_sort_order applies."
+    },
+    "/share": {
+      "description": "Show API spec plus Quick Start Notes",
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; command_sort_order applies."
+    },
+    "/export [identifier]": {
+      "description": "Export full system or specific record, including all associated tasks"
+    },
+    "/export api": {
+      "description": "Export default API spec"
+    },
+    "/import [exported_data]": {
+      "description": "Import exported or modified deep record"
+    }
   },
-  "command_sort_order":["help and commands","version","list","spec","profile","tasks","map","export","import","share"],
-  "proposals":[
-    {"identifier":"GPT-CHA-001","target_spec":"GPT-API-002","target_version":"0.4","proposal":{"summary":"Enhance clarity, expand record_type_registry, and include deprecation notes.","changes":[{"target":"record_type","change":"Updated format to 'types' for inclusive plural usage."},{"target":"record_type_registry","change":"Added 'api' and 'all' for filtering special or all records."},{"target":"/commands","change":"Updated description to 'List commands in sort order' for clarity."},{"target":"/share","change":"Updated description to specify 'API spec' plus Quick Start Notes."},{"target":"/export [identifier]","change":"Updated description to 'including all associated tasks' for precision."},{"target":"spec_type_registry","change":"Reinforced deprecation notes: PRO replaces PRF, CHA replaces PRP."}],"notes":"No breaking changes; maintains optional aliasing of tasks → steps."},"status":"merged"},
-    {"identifier":"GPT-CHA-002","target_spec":"GPT-API-002","target_version":"0.4","proposal":{"summary":"Add explicit command aliases for tasks/steps to improve clarity and machine readability.","changes":[{"target":"/tasks","change":"Introduce 'aliases' field: ['/steps']"},{"target":"/tasks [identifier]","change":"Introduce 'aliases' field: ['/steps [identifier]']"},{"target":"/list tasks","change":"Introduce 'aliases' field: ['/list steps']"}],"notes":"This does not change existing descriptions; purely adds explicit optional aliases. No breaking changes expected."},"status":"merged"}
+  "command_sort_order": ["help and commands","version","list","spec","profile","tasks","map","export","import","share"],
+  "proposals": [
+{
+  "identifier": "GPT-CHA-004",
+  "target_spec": "GPT-API-002",
+  "target_version": "0.6",
+  "proposal": {
+    "summary": "Formalize `/spec` pretty output formatting, backtick wrapping, vertical pipe escaping, and operational notes for v0.7",
+    "changes": [
+      {
+        "target": "/spec output",
+        "change": "Maintain pretty markdown format with headings, tables, and bold formatting. Escape all vertical pipes `\\|` anywhere they appear (including table cells, inline identifiers, and proposal text). Semicolons `;` do not need escaping. Do not include Quick Start Notes; `/spec` uses natural command order."
+      },
+      {
+        "target": "definitions references",
+        "change": "Consistently wrap all definition terms and inline identifiers (e.g., `execution_model`, `profile_id`, `/spec`, `/tasks [identifier]`) in backticks within descriptions. Do not wrap the rest of the description text in backticks."
+      },
+      {
+        "target": "command description formatting",
+        "change": "Wrap inline code identifiers in backticks (e.g., `/list all`, `profile_ids`) within the description column. Escape vertical pipes `\\|` anywhere they appear. Introduce optional `note` fields in commands (similar to aliases) to capture formatting rules, exceptions, or annotations."
+      },
+      {
+        "target": "Quick Start Notes vs natural order",
+        "change": "Quick Start Notes ordering (`command_sort_order`) applies only to tutorial commands (`/help`, `/share`, etc.); all other commands (/spec, /tasks, etc.) display in the natural stored order."
+      }
+    ],
+    "notes": "These rules ensure `/spec` tables remain readable and safe for Markdown while retaining proper inline code highlighting, operational behavior for Quick Start Notes, and optional note fields for commands. Escaping of vertical pipes `\\|` is applied universally, including in the proposal itself."
+  },
+  "status": "draft"
+}
+    
   ]
 }
