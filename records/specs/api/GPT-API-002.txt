@@ -3,20 +3,12 @@
   "identifier": "GPT-API-002",
   "latest_proposal_id": "GPT-CHA-007",
   "latest_proposal_status": "merged",
-  "api_schema": [
-    "version",
-    "identifier",
-    "latest_proposal_id",
-    "latest_proposal_status",
-    "definitions",
-    "record_type_registry",
-    "spec_type_registry",
-    "command_registry",
-    "command_sort_order",
-    "change_proposal_format",
-    "metadata",
-    "proposals"
-  ],
+  "metadata": {
+    "governance": {
+      "proposal_ordering": "Unique, sequential alphanumeric IDs; array is canonical truth; latest_proposal_status always matches the last proposal in proposals array.",
+      "lifecycle": "draft -> merged -> accepted|rejected -> archived"
+    }
+  },
   "definitions": {
     "execution_model": {
       "description": "Commands operate as a stateless interface that reads and mutates tracked records; multiple commands can optionally be separated by semicolons or newlines",
@@ -126,18 +118,18 @@
       "description": "Remove tracked record and associated tasks"
     },
     "/version": {
-      "description": "Return structured JSON output including version, latest_proposal_id, and latest_proposal_status"
+      "description": "Check the current version of GPT-API-002 and return JSON output with version, latest_proposal_id, latest_proposal_status"
     },
     "/version [number]": {
       "description": "Request an API version update"
     },
-    "/version up|down": {
+    "/version up\\|down": {
       "description": "Incrementally adjust API version"
     },
     "/version [identifier] [number]": {
       "description": "Set version for a specific spec"
     },
-    "/version [identifier] up|down": {
+    "/version [identifier] up\\|down": {
       "description": "Incrementally adjust spec version"
     },
     "/help": {
@@ -163,7 +155,7 @@
       "description": "Import exported or modified deep record"
     },
     "/iterate": {
-      "description": "Create a draft proposal from a bullet list or unstructured change ideas; context identifiers define scope for nested changes"
+      "description": "Convert bulleted lists or unstructured change ideas into draft proposals; nested indentation defines context identifier for subsequent change items."
     }
   },
   "command_sort_order": [
@@ -178,23 +170,32 @@
     "import",
     "share"
   ],
+  "api_schema": [
+    "version",
+    "identifier",
+    "latest_proposal_id",
+    "latest_proposal_status",
+    "definitions",
+    "record_type_registry",
+    "spec_type_registry",
+    "command_registry",
+    "command_sort_order",
+    "change_proposal_format",
+    "metadata",
+    "proposals"
+  ],
   "change_proposal_format": {
     "identifier": "Unique identifier for the change proposal (example: GPT-CHA-005)",
     "type": "Record type code; always `CHA` for change proposals",
     "owner": "Author or responsible party for the proposal",
-    "author": "Person creating the proposal (freeform, aligns with owner)",
-    "created_or_updated": "Timestamp for proposal creation or last update",
+    "author": "Author (matches owner)",
     "target_spec": "Identifier of the spec the proposal applies to",
     "target_version": "Version of the spec the proposal addresses",
+    "created_or_updated": "Timestamp of creation or last update",
     "dependencies": "Array of identifiers for required tracked records",
-    "proposal": {
-      "summary": "Short summary describing the intent of the change",
-      "changes": "Array of change objects with `target` and `change` fields"
-    },
-    "status": "Lifecycle state of the proposal such as draft, merged, accepted, rejected, archived"
-  },
-  "metadata": {
-    "governance": "latest_proposal_status always matches status of the most recent proposal in proposals array; proposals consume unique IDs sequentially and are immutable once accepted/rejected"
+    "proposal.summary": "Short summary describing the intent of the change",
+    "proposal.changes": "Array of change objects with `target` and `change` fields",
+    "status": "Lifecycle state of the proposal such as draft, merged, or rejected"
   },
   "proposals": [
     {
@@ -207,40 +208,16 @@
       "target_version": "0.9",
       "dependencies": [],
       "proposal": {
-        "summary": "Enhance proposal governance, add proposal tracking fields, improve /version output, rename spec_fork_num to spec_edition_num, and introduce metadata container.",
+        "summary": "Enhance proposal governance, add proposal tracking fields, improve /version output, rename spec_fork_num to spec_edition_num, introduce metadata container, and define /iterate context rules.",
         "changes": [
-          {
-            "target": "top_level_fields",
-            "change": "Add `latest_proposal_status` field and a `proposals` array initialized empty for new standalone spec versions."
-          },
-          {
-            "target": "/version command",
-            "change": "Return structured JSON output including version, latest_proposal_id, and latest_proposal_status."
-          },
-          {
-            "target": "definitions.spec_fork_num",
-            "change": "Rename to `spec_edition_num` and update all references."
-          },
-          {
-            "target": "change_proposal_format",
-            "change": "Add `created_or_updated`, `dependencies` array, and `author` field."
-          },
-          {
-            "target": "proposal_governance",
-            "change": "Define ordering rules: proposals must be unique, sorted alphanumerically, IDs consumed sequentially even if rejected."
-          },
-          {
-            "target": "proposal_lifecycle",
-            "change": "Formalize lifecycle: draft -> merged -> accepted|rejected -> archived."
-          },
-          {
-            "target": "top_level_fields",
-            "change": "Add `metadata` object for governance notes and non-functional information."
-          },
-          {
-            "target": "command_registry",
-            "change": "Introduce `/iterate` command to convert bullet lists or unstructured change ideas into draft proposals."
-          }
+          {"target": "top_level_fields", "change": "Add `latest_proposal_status` field and `proposals` array initialized empty for new standalone versions; add `metadata` object with governance rules."},
+          {"target": "/version command", "change": "Return structured JSON including `version`, `latest_proposal_id`, `latest_proposal_status`."},
+          {"target": "definitions.spec_fork_num", "change": "Rename to `spec_edition_num` and update all references."},
+          {"target": "change_proposal_format", "change": "Add `created_or_updated`, `dependencies` array, `author` field; fields mirror API spec schema."},
+          {"target": "proposal_governance", "change": "Proposals must be unique, sorted alphanumerically; IDs sequentially consumed even if rejected; `latest_proposal_status` matches the latest proposal in the array; rules stored in `metadata.governance`."},
+          {"target": "proposal_lifecycle", "change": "Formal lifecycle: draft -> merged -> accepted|rejected -> archived."},
+          {"target": "command_registry", "change": "Introduce `/iterate` command to convert bulleted lists or unstructured change ideas into draft proposals; nested indentation defines context identifier for subsequent change items."},
+          {"target": "api_schema", "change": "Explicitly list top-level fields in API schema for machine readability: `version`, `identifier`, `latest_proposal_id`, `latest_proposal_status`, `definitions`, `record_type_registry`, `spec_type_registry`, `command_registry`, `command_sort_order`, `change_proposal_format`, `metadata`, `proposals`."}
         ]
       },
       "status": "merged"
