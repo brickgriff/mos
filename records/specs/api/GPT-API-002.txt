@@ -1,7 +1,7 @@
 {
-  "version": "0.6",
+  "version": "0.9",
   "identifier": "GPT-API-002",
-  "latest_proposal_id": "GPT-CHA-003",
+  "latest_proposal_id": "GPT-CHA-006",
   "definitions": {
     "execution_model": {
       "description": "Commands operate as a stateless interface that reads and mutates tracked records; multiple commands can optionally be separated by semicolons or newlines",
@@ -39,8 +39,8 @@
       "description": "Standard code for spec type",
       "format": "TYP (3-letter code defined in spec_type_registry)"
     },
-    "spec_ref_num": {
-      "description": "Spec reference number",
+    "spec_fork_num": {
+      "description": "Spec edition number",
       "format": "### (differs from version number)"
     },
     "record_type": {
@@ -66,41 +66,37 @@
   },
   "command_registry": {
     "/list": {
-      "description": "Alias for /list all; Shows both profile_ids and spec_ids"
+      "description": "Alias for /list all; Shows both `profile_ids` and `spec_ids`. Always includes GPT-API-002 as a tracked meta-project spec."
     },
     "/list all": {
-      "description": "Show all tracked profiles and specs"
+      "description": "Show all tracked profiles and specs. Always includes GPT-API-002."
     },
     "/list profiles": {
-      "description": "Show only tracked profile_ids"
+      "description": "Show only tracked `profile_ids`"
     },
     "/list specs": {
-      "description": "Show only tracked spec_ids"
+      "description": "Show only tracked `spec_ids`. Always includes GPT-API-002."
     },
     "/list tasks": {
-      "description": "Alias for /tasks (optional alias: /list steps)",
-      "aliases": ["/list steps"],
-      "note": "Quick Start Notes ordering enforced only in /help, /share, and similar tutorial commands."
+      "description": "Alias for `/tasks`",
+      "aliases": ["/list steps"]
     },
     "/tasks": {
-      "description": "Prints top three meta-project tasks (alias: /steps)",
-      "aliases": ["/steps"],
-      "note": "Quick Start Notes ordering enforced only in /help, /share, and similar tutorial commands."
+      "description": "Prints top three meta-project tasks",
+      "aliases": ["/steps"]
     },
     "/tasks [identifier]": {
-      "description": "Prints top three next tasks for the record and appends meta-project tasks (alias: /steps [identifier])",
-      "aliases": ["/steps [identifier]"],
-      "note": "Quick Start Notes ordering enforced only in /help, /share, and similar tutorial commands."
+      "description": "Prints top three next tasks for the record and appends meta-project tasks",
+      "aliases": ["/steps [identifier]"]
     },
     "/profile [profile_id]": {
       "description": "Show profile details; creates record if new"
     },
     "/spec": {
-      "description": "Show the default API spec in pretty markdown",
-      "note": "Pipes in tables and inline identifiers are escaped. Quick Start Notes not included; uses natural command order."
+      "description": "Show the default API spec in pretty markdown. References the tracked meta-project record GPT-API-002."
     },
     "/spec [spec_id]": {
-      "description": "Show spec for the given identifier"
+      "description": "Show spec for the given identifier. GPT-API-002 always exists as a tracked meta-project."
     },
     "/map": {
       "description": "Generate ecosystem map"
@@ -120,29 +116,30 @@
     "/version [number]": {
       "description": "Request an API version update"
     },
-    "/version up|down": {
+    "/version up\\|down": {
       "description": "Incrementally adjust API version"
     },
     "/version [identifier] [number]": {
       "description": "Set version for a specific spec"
     },
-    "/version [identifier] up|down": {
+    "/version [identifier] up\\|down": {
       "description": "Incrementally adjust spec version"
     },
     "/help": {
       "description": "Show commands plus Quick Start Notes",
-      "note": "Quick Start Notes ordering enforced only for tutorial commands; command_sort_order applies."
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; `command_sort_order` applies."
     },
     "/commands": {
       "description": "List commands in sort order",
-      "note": "Quick Start Notes ordering enforced only for tutorial commands; command_sort_order applies."
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; `command_sort_order` applies."
     },
     "/share": {
       "description": "Show API spec plus Quick Start Notes",
-      "note": "Quick Start Notes ordering enforced only for tutorial commands; command_sort_order applies."
+      "note": "Quick Start Notes ordering enforced only for tutorial commands; `command_sort_order` applies."
     },
     "/export [identifier]": {
-      "description": "Export full system or specific record, including all associated tasks"
+      "description": "Export full system or specific record, including all associated tasks",
+      "note": "Meta-project tasks appear only when exporting the API spec (`GPT-API-002`). Profile and spec exports include only tasks associated with that record."
     },
     "/export api": {
       "description": "Export default API spec"
@@ -151,36 +148,26 @@
       "description": "Import exported or modified deep record"
     }
   },
-  "command_sort_order": ["help and commands","version","list","spec","profile","tasks","map","export","import","share"],
-  "proposals": [
-{
-  "identifier": "GPT-CHA-004",
-  "target_spec": "GPT-API-002",
-  "target_version": "0.6",
-  "proposal": {
-    "summary": "Formalize `/spec` pretty output formatting, backtick wrapping, vertical pipe escaping, and operational notes for v0.7",
-    "changes": [
-      {
-        "target": "/spec output",
-        "change": "Maintain pretty markdown format with headings, tables, and bold formatting. Escape all vertical pipes `\\|` anywhere they appear (including table cells, inline identifiers, and proposal text). Semicolons `;` do not need escaping. Do not include Quick Start Notes; `/spec` uses natural command order."
-      },
-      {
-        "target": "definitions references",
-        "change": "Consistently wrap all definition terms and inline identifiers (e.g., `execution_model`, `profile_id`, `/spec`, `/tasks [identifier]`) in backticks within descriptions. Do not wrap the rest of the description text in backticks."
-      },
-      {
-        "target": "command description formatting",
-        "change": "Wrap inline code identifiers in backticks (e.g., `/list all`, `profile_ids`) within the description column. Escape vertical pipes `\\|` anywhere they appear. Introduce optional `note` fields in commands (similar to aliases) to capture formatting rules, exceptions, or annotations."
-      },
-      {
-        "target": "Quick Start Notes vs natural order",
-        "change": "Quick Start Notes ordering (`command_sort_order`) applies only to tutorial commands (`/help`, `/share`, etc.); all other commands (/spec, /tasks, etc.) display in the natural stored order."
-      }
-    ],
-    "notes": "These rules ensure `/spec` tables remain readable and safe for Markdown while retaining proper inline code highlighting, operational behavior for Quick Start Notes, and optional note fields for commands. Escaping of vertical pipes `\\|` is applied universally, including in the proposal itself."
-  },
-  "status": "draft"
-}
-    
-  ]
+  "command_sort_order": [
+    "help and commands",
+    "version",
+    "list",
+    "spec",
+    "profile",
+    "tasks",
+    "map",
+    "export",
+    "import",
+    "share"
+  ],
+  "change_proposal_format": {
+    "identifier": "Unique identifier for the change proposal (example: GPT-CHA-005)",
+    "type": "Record type code; always `CHA` for change proposals",
+    "owner": "Author or responsible party for the proposal",
+    "target_spec": "Identifier of the spec the proposal applies to",
+    "target_version": "Version of the spec the proposal addresses",
+    "proposal.summary": "Short summary describing the intent of the change",
+    "proposal.changes": "Array of change objects with `target` and `change` fields",
+    "status": "Lifecycle state of the proposal such as draft, merged, or rejected"
+  }
 }
